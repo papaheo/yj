@@ -61,16 +61,29 @@ const icons = [
 ];
 function showFountain() { showWater("fountain"); }
 function showCascade() { showWater("cascade"); }
+// Add lightning div when showing water animation
 function showWater(type) {
   document.getElementById('main-choice').style.display = 'none';
   document.getElementById('water-stage').style.display = 'block';
-  document.getElementById('water-animation').innerHTML = type === "fountain" ? fountainSVG : cascadeSVG;
+  const wa = document.getElementById('water-animation');
+  wa.innerHTML = (type === "fountain" ? fountainSVG : cascadeSVG);
+  
+  // Add lightning overlay
+  const lightningDiv = document.createElement('div');
+  lightningDiv.className = 'lightning-flash';
+  wa.appendChild(lightningDiv);
+
+  // Play ambient sound for water
+  playWaterSound(type);
+
   const picker = document.getElementById('icon-picker');
   picker.innerHTML = "";
-  icons.forEach((icon, i) => {
+  // Animals only (no fruits)
+  const animalIcons = icons.slice(0,3); // Lion, Elephant, Monkey (assumed first 3)
+  animalIcons.forEach(icon => {
     const btn = document.createElement("button");
     btn.className = "icon-btn";
-    btn.onclick = () => playInteraction(icon, type);
+    btn.onclick = () => playAnimalInteraction(icon, type);
     btn.innerHTML = `<img src="${icon.img}" alt="${icon.name}" title="${icon.name}">`;
     picker.appendChild(btn);
   });
@@ -87,6 +100,66 @@ function playInteraction(icon, type) {
   }, 1200);
 }
 function restart() {
+  stopWaterSound();
   document.getElementById('water-stage').style.display = 'none';
   document.getElementById('main-choice').style.display = 'block';
 }
+
+
+const waterSounds = {
+  fountain: "https://cdn.pixabay.com/audio/2021/07/12/audio_8b44096148.mp3", // example water fountain sound 
+  cascade: "https://cdn.pixabay.com/audio/2017/08/12/audio_6238b07954.mp3"   // example cascade sound
+};
+
+let ambientAudio = null;
+
+function playWaterSound(type) {
+  if (ambientAudio) {
+    ambientAudio.pause();
+    ambientAudio = null;
+  }
+  ambientAudio = new Audio(waterSounds[type]);
+  ambientAudio.loop = true;
+  ambientAudio.volume = 0.25; // soft volume to not disturb baby
+  ambientAudio.play();
+}
+
+function stopWaterSound() {
+  if (ambientAudio) {
+    ambientAudio.pause();
+    ambientAudio = null;
+  }
+}
+
+function playAnimalInteraction(icon, type) {
+  const wa = document.getElementById('water-animation');
+  wa.innerHTML = (type === "fountain" ? fountainSVG : cascadeSVG);
+  
+  // Create wandering animal img
+  const animalImg = document.createElement('img');
+  animalImg.src = icon.img;
+  animalImg.alt = icon.name;
+  animalImg.style.position = 'absolute';
+  animalImg.style.width = '60px';
+  animalImg.style.height = '60px';
+  animalImg.style.top = '100px';
+  animalImg.style.left = '0';
+  animalImg.style.transition = 'left 10s linear';
+  wa.appendChild(animalImg);
+
+  // Play animal sound
+  const audio = document.getElementById('sound-player');
+  audio.src = icon.sound;
+  audio.play();
+
+  // Start wandering animation (moving left to right)
+  setTimeout(() => {
+    animalImg.style.left = '260px'; // Move to right side over 10 seconds
+  }, 100);
+
+  // Remove image after animation to reset
+  setTimeout(() => {
+    wa.innerHTML = (type === "fountain" ? fountainSVG : cascadeSVG);
+  }, 11000);
+}
+

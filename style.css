@@ -128,3 +128,250 @@ h2 {
   50% { 
     box-shadow: 
       0 8px 40px rgba(77,184,255,1),
+      inset 0 -10px 20px rgba(0,0,0,0.3);
+  }
+}
+
+.fountain-stream {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  width: 6px;
+  background: linear-gradient(to top, 
+    rgba(77,184,255,1), 
+    rgba(26,158,255,0.8),
+    rgba(72,202,228,0.6),
+    rgba(255,255,255,0));
+  border-radius: 3px;
+  box-shadow: 
+    0 0 10px rgba(77,184,255,1),
+    0 0 20px rgba(26,158,255,0.6);
+  animation: fountainStream 1.2s ease-in-out infinite;
+  filter: blur(0.5px);
+}
+
+@keyframes fountainStream {
+  0%, 100% { 
+    height: 0; 
+    opacity: 0.5; 
+  }
+  50% { 
+    height: 160px; 
+    opacity: 1; 
+  }
+}
+
+/* 화려한 폭포 효과 */
+.cascade-water {
+  width: 140px;
+  height: 280px;
+  position: relative;
+}
+
+.cascade-top {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 40px;
+  background: linear-gradient(to bottom, #4db8ff, #2b9fd9);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 0 30px rgba(77,184,255,0.9);
+}
+
+.cascade-stream {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 220px;
+  background: linear-gradient(to bottom, 
+    rgba(77,184,255,1),
+    rgba(102,179,255,0.95),
+    rgba(72,202,228,0.9),
+    rgba(26,117,255,0.85));
+  border-radius: 15px;
+  box-shadow: 
+    0 0 30px rgba(77,184,255,1),
+    inset 0 0 20px rgba(255,255,255,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.cascade-stream::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(255,255,255,0.8), 
+    transparent,
+    rgba(255,255,255,0.6));
+  animation: cascadeFlow 1.5s linear infinite;
+}
+
+.cascade-stream::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 10%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(255,255,255,0.5), 
+    transparent);
+  animation: cascadeFlow 2s linear infinite;
+  animation-delay: 0.5s;
+}
+
+@keyframes cascadeFlow {
+  to { 
+    top: 120%; 
+  }
+}
+
+.cascade-pool {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 35px;
+  background: radial-gradient(ellipse at center, 
+    rgba(77,184,255,1), 
+    rgba(26,158,255,0.8));
+  border-radius: 50%;
+  box-shadow: 0 4px 30px rgba(77,184,255,0.9);
+  animation: poolPulse 2s ease-in-out infinite;
+}
+
+/* 화려한 반짝임 효과 */
+.sparkle {
+  position: absolute;
+  background: radial-gradient(circle, 
+    rgba(255,255,255,1), 
+    rgba(255,215,0,0.8),
+    rgba(72,202,228,0.6));
+  border-radius: 50%;
+  pointer-events: none;
+  animation: sparkleFloat 1.2s ease-out forwards;
+  box-shadow: 
+    0 0 20px rgba(255,255,255,1),
+    0 0 30px rgba(255,215,0,0.8);
+}
+
+@keyframes sparkleFloat {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), var(--y)) scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* 더 화려한 물방울 효과 */
+.water-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, 
+    rgba(255,255,255,0.9), 
+    rgba(77,184,255,0.7));
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particleFloat 2s ease-out forwards;
+  box-shadow: 0 0 10px rgba(77,184,255,0.8);
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--px), var(--py)) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.animal {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  user-select: none;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.animal:active {
+  transform: scale(1.15);
+}
+
+.animal img {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.animal.celebrating {
+  animation: celebrate 0.8s ease-in-out;
+}
+
+@keyframes celebrate {
+  0%, 100% { 
+    transform: rotate(0deg) scale(1); 
+  }
+  25% { 
+    transform: rotate(-20deg) scale(1.3); 
+  }
+  50% { 
+    transform: rotate(20deg) scale(1.3); 
+  }
+  75% { 
+    transform: rotate(-20deg) scale(1.3); 
+  }
+}
+
+#icon-picker {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.icon-btn {
+  background: white;
+  border: 3px solid #00b4d8;
+  border-radius: 20px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.icon-btn:hover, .icon-btn:active {
+  transform: scale(1.15);
+  border-color: #0077b6;
+  box-shadow: 0 6px 20px rgba(0,119,182,0.4);
+}
+
+.icon-btn img {
+  width: 70px;
+  height: 70px;
+  display: block;
+}
+
+.back-btn {
+  font-size: 1.3em;
+  padding: 15px 30px;
+  margin-top: 20px;
+}

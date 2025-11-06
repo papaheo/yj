@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>동물 분수 게임</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Baby's Magical Water Play</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 </head>
 <body>
   <div id="language-switch">
+    <label for="lang-select">언어 / Language:</label>
     <select id="lang-select">
       <option value="en">English</option>
       <option value="ko">한국어</option>
     </select>
   </div>
 
+  <h1 id="title-main">Choose! Fountain or Cascade</h1>
+
   <div id="main-choice">
-    <h1 id="title-main">Choose! Fountain or Cascade</h1>
-    <button class="btn" id="fountain-btn" onclick="showWater('fountain')">🌊 Fountain</button>
-    <button class="btn" id="cascade-btn" onclick="showWater('cascade')">💦 Cascade</button>
+    <button id="fountain-btn" class="btn" onclick="showWater('fountain')">🌊 Fountain</button>
+    <button id="cascade-btn" class="btn" onclick="showWater('cascade')">💦 Cascade</button>
   </div>
 
   <div id="water-stage">
-    <h2 id="pick-title">Tap an animal to play and watch it wander!</h2>
     <div id="game-container" onclick="handleContainerClick(event)">
       <div id="water-animation"></div>
     </div>
+    <h2 id="pick-title">Tap an animal to play and watch it wander!</h2>
     <div id="icon-picker"></div>
-    <button class="btn back-btn" id="back-btn" onclick="goBack()">↩ Back</button>
+    <button id="back-btn" class="btn back-btn" onclick="goBack()">↩ Back</button>
   </div>
 
   <script src="script.js"></script>

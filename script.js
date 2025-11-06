@@ -25,74 +25,43 @@ let wanderInterval = null;
 let sparkleInterval = null;
 let particleInterval = null;
 let currentWaterType = null;
-let audioContext = null;
-let audioUnlocked = false;
 
-// 동물 데이터 - 다양한 동물 소리
+// 동물 데이터 - FreeAnimalSounds.org의 실제 동물 소리
 const icons = [
   {
     name: "Lion", 
     emoji: "🦁", 
-    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf2bf94.mp3",
-    moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf2bf94.mp3"
+    sound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Löwe.mp3",
+    moveSound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Löwe.mp3"
   },
   {
     name: "Elephant", 
     emoji: "🐘", 
-    sound: "https://cdn.pixabay.com/audio/2021/08/09/audio_8c36fb677e.mp3",
-    moveSound: "https://cdn.pixabay.com/audio/2021/08/09/audio_8c36fb677e.mp3"
+    sound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Elefant.mp3",
+    moveSound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Elefant.mp3"
   },
   {
     name: "Monkey", 
     emoji: "🐵", 
-    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_7cbc0735b3.mp3",
-    moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_7cbc0735b3.mp3"
+    sound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Schimpanse.mp3",
+    moveSound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Schimpanse.mp3"
   },
   {
     name: "Panda", 
     emoji: "🐼", 
-    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_0625c1539c.mp3",
-    moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_0625c1539c.mp3"
+    sound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Gorilla.mp3",
+    moveSound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Gorilla.mp3"
   }
 ];
 
-// 물 소리 (분수/폭포)
+// 물 소리 - 작동하는 URL
 const waterSounds = {
-  fountain: "https://cdn.pixabay.com/audio/2022/03/24/audio_7c0bb3bcee.mp3",
-  cascade: "https://cdn.pixabay.com/audio/2022/05/13/audio_03b97c1453.mp3"
+  fountain: "https://cdn.freesound.org/previews/171/171756_2437358-lq.mp3",
+  cascade: "https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
 };
 
 // 물에 닿았을 때 소리
-const splashSound = "https://cdn.pixabay.com/audio/2023/07/19/audio_fcbc5e28c5.mp3";
-
-// 오디오 컨텍스트 초기화 (모바일 대응)
-function initAudioContext() {
-  if (!audioContext) {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioContext = new AudioContext();
-      console.log('오디오 컨텍스트 생성됨');
-    } catch (e) {
-      console.log('오디오 컨텍스트 생성 실패:', e);
-    }
-  }
-}
-
-// 오디오 잠금 해제 (모바일 필수)
-function unlockAudio() {
-  if (audioUnlocked) return;
-  
-  initAudioContext();
-  
-  if (audioContext && audioContext.state === 'suspended') {
-    audioContext.resume().then(() => {
-      console.log('오디오 컨텍스트 재개됨');
-      audioUnlocked = true;
-    });
-  } else {
-    audioUnlocked = true;
-  }
-}
+const splashSound = "https://cdn.freesound.org/previews/345/345299_5121236-lq.mp3";
 
 // 텍스트 업데이트
 function updateTexts() {
@@ -110,17 +79,10 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTexts();
   });
   updateTexts();
-  
-  // 첫 터치/클릭으로 오디오 잠금 해제
-  document.addEventListener('touchstart', unlockAudio, { once: true });
-  document.addEventListener('click', unlockAudio, { once: true });
 });
 
 // 물 장면 표시
 function showWater(type) {
-  // 오디오 잠금 해제
-  unlockAudio();
-  
   currentWaterType = type;
   document.getElementById('main-choice').style.display = 'none';
   document.getElementById('water-stage').style.display = 'block';
@@ -144,11 +106,7 @@ function showWater(type) {
     `;
   }
   
-  // 약간 지연 후 물 소리 재생
-  setTimeout(() => {
-    playWaterSound(type);
-  }, 100);
-  
+  playWaterSound(type);
   startSparkles();
   startWaterParticles();
   setupIconPicker();
@@ -170,45 +128,35 @@ function createFountainStreams() {
   return streams;
 }
 
-// 물 소리 재생 (개선된 버전)
+// 물 소리 재생 - 단순하고 확실한 방법
 function playWaterSound(type) {
-  // 기존 물소리 정지
+  // 기존 소리 정지
   if (ambientAudio) {
-    ambientAudio.pause();
-    ambientAudio.currentTime = 0;
+    try {
+      ambientAudio.pause();
+      ambientAudio.currentTime = 0;
+    } catch (e) {
+      console.log('이전 소리 정지 오류:', e);
+    }
     ambientAudio = null;
   }
   
   try {
-    // 새로운 오디오 생성
-    ambientAudio = new Audio();
-    ambientAudio.src = waterSounds[type];
+    // 새 오디오 생성
+    ambientAudio = new Audio(waterSounds[type]);
     ambientAudio.loop = true;
     ambientAudio.volume = 0.4;
     
-    // preload 설정
-    ambientAudio.load();
-    
     // 재생 시도
-    const playPromise = ambientAudio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          console.log('✅ 물 소리 재생 성공!');
-        })
-        .catch(error => {
-          console.log('⚠️ 물 소리 자동재생 차단:', error.message);
-          // 재시도를 위해 대기
-          setTimeout(() => {
-            ambientAudio.play()
-              .then(() => console.log('✅ 재시도 성공!'))
-              .catch(e => console.log('❌ 재시도 실패:', e.message));
-          }, 500);
-        });
-    }
+    ambientAudio.play().then(() => {
+      console.log('✅ 물 소리 재생 성공!');
+    }).catch(err => {
+      console.log('⚠️ 물 소리 재생 실패:', err.message);
+      // 버튼 클릭으로 재생 유도
+      console.log('💡 화면을 한번 터치하면 소리가 재생됩니다');
+    });
   } catch (e) {
-    console.log('❌ 물 소리 생성 오류:', e);
+    console.log('❌ 물 소리 오류:', e.message);
   }
 }
 
@@ -283,9 +231,6 @@ function setupIconPicker() {
 
 // 동물 생성
 function spawnAnimal(icon) {
-  // 오디오 잠금 해제
-  unlockAudio();
-  
   if (currentAnimal) {
     currentAnimal.remove();
   }
@@ -313,27 +258,19 @@ function spawnAnimal(icon) {
   startWandering(animal, container);
 }
 
-// 동물 소리 재생 (개선된 버전)
+// 동물 소리 재생 - 간단하고 확실한 방법
 function playAnimalSound(icon) {
   try {
-    const audio = new Audio();
-    audio.src = icon.sound;
+    const audio = new Audio(icon.sound);
     audio.volume = 0.7;
-    audio.load();
     
-    const playPromise = audio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          console.log(`✅ ${icon.name} 소리 재생!`);
-        })
-        .catch(error => {
-          console.log(`⚠️ ${icon.name} 소리 재생 실패:`, error.message);
-        });
-    }
+    audio.play().then(() => {
+      console.log(`✅ ${icon.name} 소리 재생!`);
+    }).catch(err => {
+      console.log(`⚠️ ${icon.name} 소리 실패:`, err.message);
+    });
   } catch (e) {
-    console.log('❌ 동물 소리 생성 오류:', e);
+    console.log('❌ 동물 소리 오류:', e.message);
   }
 }
 
@@ -356,16 +293,16 @@ function startWandering(animal, container) {
 // 동물 이동 소리
 function playAnimalMoveSound(icon) {
   try {
-    const audio = new Audio();
-    audio.src = icon.moveSound;
+    const audio = new Audio(icon.moveSound);
     audio.volume = 0.5;
-    audio.load();
     
-    audio.play()
-      .then(() => console.log(`🚶 ${icon.name} 이동 소리!`))
-      .catch(e => console.log(`⚠️ 이동 소리 실패:`, e.message));
+    audio.play().then(() => {
+      console.log(`🚶 ${icon.name} 이동!`);
+    }).catch(err => {
+      console.log(`⚠️ 이동 소리 실패:`, err.message);
+    });
   } catch (e) {
-    console.log('❌ 이동 소리 생성 오류:', e);
+    console.log('❌ 이동 소리 오류:', e.message);
   }
 }
 
@@ -411,16 +348,16 @@ function checkIfUnderWater(animal, container) {
 // 물 닿았을 때 소리
 function playSplashSound() {
   try {
-    const audio = new Audio();
-    audio.src = splashSound;
+    const audio = new Audio(splashSound);
     audio.volume = 0.8;
-    audio.load();
     
-    audio.play()
-      .then(() => console.log('💦 물 첨벙 소리!'))
-      .catch(e => console.log('⚠️ 물 첨벙 소리 실패:', e.message));
+    audio.play().then(() => {
+      console.log('💦 이-----~~~~하!!!!');
+    }).catch(err => {
+      console.log('⚠️ 물 첨벙 실패:', err.message);
+    });
   } catch (e) {
-    console.log('❌ 물 첨벙 소리 생성 오류:', e);
+    console.log('❌ 물 첨벙 오류:', e.message);
   }
 }
 
@@ -458,8 +395,12 @@ function goBack() {
   document.getElementById('water-stage').style.display = 'none';
   
   if (ambientAudio) {
-    ambientAudio.pause();
-    ambientAudio.currentTime = 0;
+    try {
+      ambientAudio.pause();
+      ambientAudio.currentTime = 0;
+    } catch (e) {
+      console.log('소리 정지 오류:', e);
+    }
     ambientAudio = null;
   }
   if (wanderInterval) {

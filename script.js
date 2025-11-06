@@ -17,8 +17,8 @@ const translations = {
 };
 
 let currentLang = "en";
-let ambientAudio = null;  // persistent fountain/cascade water audio
-let animalAudio = null;   // persistent current animal sound audio
+let ambientAudio = null;  // Persistent fountain/cascade sound
+let animalAudio = null;   // Persistent animal sound (including movement)
 let currentAnimal = null;
 let currentAnimalIcon = null;
 let wanderInterval = null;
@@ -54,8 +54,8 @@ const icons = [
 ];
 
 const waterSounds = {
-  fountain: "https://cdn.freesound.org/previews/171/171756_2437358-lq.mp3", // gentle fountain water
-  cascade: "https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"  // gentle cascade water
+  fountain: "https://cdn.freesound.org/previews/171/171756_2437358-lq.mp3",
+  cascade: "https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
 };
 
 const splashSound = "https://cdn.freesound.org/previews/345/345299_5121236-lq.mp3";
@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
   updateTexts();
 });
 
-// Show Fountain or Cascade area, start animations and sounds
 function showWater(type) {
   currentWaterType = type;
   document.getElementById('main-choice').style.display = 'none';
@@ -131,7 +130,7 @@ function playWaterSound(type) {
   ambientAudio = new Audio(waterSounds[type]);
   ambientAudio.loop = true;
   ambientAudio.volume = 0.4;
-  ambientAudio.play().catch((err) => {
+  ambientAudio.play().catch(err => {
     console.log('Water sound play prevented, user interaction required.', err.message);
   });
 }
@@ -224,13 +223,10 @@ function spawnAnimal(icon) {
   startWandering(animal, container);
 }
 
-let animalAudio = null; // Persistent animal sound player
-
 function playAnimalSound(icon) {
   if (animalAudio) {
     animalAudio.pause();
     animalAudio.currentTime = 0;
-    animalAudio = null;
   }
   animalAudio = new Audio(icon.sound);
   animalAudio.volume = 0.7;
@@ -260,9 +256,7 @@ function playAnimalMoveSound(icon) {
   }
   animalAudio = new Audio(icon.moveSound);
   animalAudio.volume = 0.5;
-  animalAudio.play().then(() => {
-    console.log(`${icon.name} movement sound played.`);
-  }).catch(err => {
+  animalAudio.play().catch(err => {
     console.log(`Movement sound play failed:`, err.message);
   });
 }
@@ -312,9 +306,7 @@ function playSplashSound() {
   }
   const splashAudio = new Audio(splashSound);
   splashAudio.volume = 0.8;
-  splashAudio.play().then(() => {
-    console.log('Splash sound played.');
-  }).catch(err => {
+  splashAudio.play().catch(err => {
     console.log('Splash sound play failed:', err.message);
   });
 }
@@ -351,12 +343,8 @@ function goBack() {
   document.getElementById('water-stage').style.display = 'none';
 
   if (ambientAudio) {
-    try {
-      ambientAudio.pause();
-      ambientAudio.currentTime = 0;
-    } catch (e) {
-      console.log('Audio stop error:', e);
-    }
+    ambientAudio.pause();
+    ambientAudio.currentTime = 0;
     ambientAudio = null;
   }
   if (wanderInterval) {

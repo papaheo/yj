@@ -37,7 +37,8 @@ const waterSounds = {
   cascade:"https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
 };
 
-const splashSound = "https://cdn.freesound.org/previews/345/345299_5121236-lq.mp3";
+// '이~~~~~하~~~!' 즐거운 소리 URL (재미있는 물에 닿았을 때 소리)
+const funSplashSound = "https://cdn.pixabay.com/download/audio/2022/03/15/audio_5b05a9c684.mp3?filename=dolphin-whistle-2-109627.mp3";
 
 function updateTexts() {
   document.getElementById("title-main").innerText = translations[currentLang].mainTitle;
@@ -237,6 +238,7 @@ function moveAnimalRandomly(animal, container) {
   }, 2000);
 }
 
+// 물에 닿았는지 판단 후 소리 재생을 funSplashSound로 교체
 function checkIfUnderWater(animal, container) {
   const rect = container.getBoundingClientRect();
   const animalRect = animal.getBoundingClientRect();
@@ -264,7 +266,7 @@ function playSplashSound() {
     animalAudio.currentTime = 0;
     animalAudio = null;
   }
-  const splashAudio = new Audio(splashSound);
+  const splashAudio = new Audio(funSplashSound);
   splashAudio.volume = 0.8;
   splashAudio.play().catch(err => console.log('Splash sound play failed:', err.message));
 }

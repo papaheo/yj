@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Baby's Playground: Fountain Fun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="language-switch">
+    <label for="lang-select">언어 / Language:</label>
+    <select id="lang-select">
+      <option value="en">English</option>
+      <option value="ko">한국어</option>
+    </select>
+  </div>
+  <h1 id="title-main">Choose! Fountain or Cascade</h1>
+  <div id="main-choice">
+    <button id="fountain-btn" onclick="showFountain()">Fountain</button>
+    <button id="cascade-btn" onclick="showCascade()">Cascade</button>
+  </div>
+  <div id="water-stage" style="display:none;">
+    <div id="water-animation"></div>
+    <h2 id="pick-title">Pick an animal or fruit!</h2>
+    <div id="icon-picker"></div>
+    <button id="back-btn" onclick="restart()">↩ Back</button>
+  </div>
+  <audio id="sound-player"></audio>
+  <script src="script.js"></script>
+</body>
+</html>

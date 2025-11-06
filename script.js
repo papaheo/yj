@@ -38,8 +38,8 @@ const waterSounds = {
   cascade:"https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
 };
 
-// 우후~ 환호 소리만
-const wooHooSound = "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b14f2c69.mp3?filename=woo-hoo-sound-effect-4.mp3";
+// 아이들 야호~ 환호 소리 (실제 아이들 목소리)
+const wooHooSound = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=kids-saying-yay-sound-effect-2-115919.mp3";
 
 function updateTexts() {
   document.getElementById("title-main").innerText = translations[currentLang].mainTitle;

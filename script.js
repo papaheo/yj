@@ -37,7 +37,7 @@ const waterSounds = {
   cascade:"https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
 };
 
-// '이~~~~~하~~~!' 즐거운 소리 URL (재미있는 물에 닿았을 때 소리)
+// 즐거운 물에 닿았을 때 소리
 const funSplashSound = "https://cdn.pixabay.com/download/audio/2022/03/15/audio_5b05a9c684.mp3?filename=dolphin-whistle-2-109627.mp3";
 
 function updateTexts() {
@@ -100,7 +100,9 @@ function playWaterSound(type) {
   ambientAudio = new Audio(waterSounds[type]);
   ambientAudio.loop = true;
   ambientAudio.volume = 0.4;
-  ambientAudio.play().catch(err => console.log('Water sound play prevented:', err.message));
+  ambientAudio.play().catch(err => {
+    console.log('Water sound play prevented:', err.message);
+  });
 }
 
 function startSparkles() {
@@ -238,7 +240,6 @@ function moveAnimalRandomly(animal, container) {
   }, 2000);
 }
 
-// 물에 닿았는지 판단 후 소리 재생을 funSplashSound로 교체
 function checkIfUnderWater(animal, container) {
   const rect = container.getBoundingClientRect();
   const animalRect = animal.getBoundingClientRect();
@@ -254,7 +255,7 @@ function checkIfUnderWater(animal, container) {
     Math.pow(centerY - waterCenterY, 2)
   );
 
-  if(distance < 120) {
+  if(distance < 120) { // 닿았을 때
     celebrateAnimal(animal);
     playSplashSound();
   }
@@ -266,7 +267,7 @@ function playSplashSound() {
     animalAudio.currentTime = 0;
     animalAudio = null;
   }
-  const splashAudio = new Audio(funSplashSound);
+  const splashAudio = new Audio(funSplashSound); // 새로운 즐거운 소리
   splashAudio.volume = 0.8;
   splashAudio.play().catch(err => console.log('Splash sound play failed:', err.message));
 }
@@ -282,8 +283,8 @@ function handleContainerClick(event) {
   const y = event.clientY - rect.top - 40;
 
   currentAnimal.style.transition = 'none';
-  currentAnimal.style.left = Math.min(Math.max(0, x), rect.width - 80) + 'px';
-  currentAnimal.style.top = Math.min(Math.max(0, y), rect.height - 80) + 'px';
+  currentAnimal.style.left = Math.min(Math.max(0, x), rect.width-80) + 'px';
+  currentAnimal.style.top = Math.min(Math.max(0, y), rect.height-80) + 'px';
 
   if(currentAnimalIcon) {
     playAnimalMoveSound(currentAnimalIcon);

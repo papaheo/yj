@@ -25,43 +25,74 @@ let wanderInterval = null;
 let sparkleInterval = null;
 let particleInterval = null;
 let currentWaterType = null;
+let audioContext = null;
+let audioUnlocked = false;
 
-// 동물 데이터 - 실제 동물 소리로 수정
+// 동물 데이터 - 다양한 동물 소리
 const icons = [
   {
     name: "Lion", 
     emoji: "🦁", 
-    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf2bf94.mp3", // 사자 으르렁
+    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf2bf94.mp3",
     moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf2bf94.mp3"
   },
   {
     name: "Elephant", 
     emoji: "🐘", 
-    sound: "https://cdn.pixabay.com/audio/2021/08/09/audio_8c36fb677e.mp3", // 코끼리 나팔 소리
+    sound: "https://cdn.pixabay.com/audio/2021/08/09/audio_8c36fb677e.mp3",
     moveSound: "https://cdn.pixabay.com/audio/2021/08/09/audio_8c36fb677e.mp3"
   },
   {
     name: "Monkey", 
     emoji: "🐵", 
-    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_7cbc0735b3.mp3", // 원숭이 우끼끼
+    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_7cbc0735b3.mp3",
     moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_7cbc0735b3.mp3"
   },
   {
     name: "Panda", 
     emoji: "🐼", 
-    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_0625c1539c.mp3", // 곰 소리
+    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_0625c1539c.mp3",
     moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_0625c1539c.mp3"
   }
 ];
 
-// 물 소리 (분수/폭포) - 실제 물 소리로 수정
+// 물 소리 (분수/폭포)
 const waterSounds = {
-  fountain: "https://cdn.pixabay.com/audio/2022/03/24/audio_7c0bb3bcee.mp3", // 분수 소리
-  cascade: "https://cdn.pixabay.com/audio/2022/05/13/audio_03b97c1453.mp3" // 폭포 소리
+  fountain: "https://cdn.pixabay.com/audio/2022/03/24/audio_7c0bb3bcee.mp3",
+  cascade: "https://cdn.pixabay.com/audio/2022/05/13/audio_03b97c1453.mp3"
 };
 
-// 물에 닿았을 때 소리 (이-----~~~~하!!!!)
-const splashSound = "https://cdn.pixabay.com/audio/2023/07/19/audio_fcbc5e28c5.mp3"; // 물 첨벙 소리
+// 물에 닿았을 때 소리
+const splashSound = "https://cdn.pixabay.com/audio/2023/07/19/audio_fcbc5e28c5.mp3";
+
+// 오디오 컨텍스트 초기화 (모바일 대응)
+function initAudioContext() {
+  if (!audioContext) {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioContext();
+      console.log('오디오 컨텍스트 생성됨');
+    } catch (e) {
+      console.log('오디오 컨텍스트 생성 실패:', e);
+    }
+  }
+}
+
+// 오디오 잠금 해제 (모바일 필수)
+function unlockAudio() {
+  if (audioUnlocked) return;
+  
+  initAudioContext();
+  
+  if (audioContext && audioContext.state === 'suspended') {
+    audioContext.resume().then(() => {
+      console.log('오디오 컨텍스트 재개됨');
+      audioUnlocked = true;
+    });
+  } else {
+    audioUnlocked = true;
+  }
+}
 
 // 텍스트 업데이트
 function updateTexts() {
@@ -79,10 +110,17 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTexts();
   });
   updateTexts();
+  
+  // 첫 터치/클릭으로 오디오 잠금 해제
+  document.addEventListener('touchstart', unlockAudio, { once: true });
+  document.addEventListener('click', unlockAudio, { once: true });
 });
 
 // 물 장면 표시
 function showWater(type) {
+  // 오디오 잠금 해제
+  unlockAudio();
+  
   currentWaterType = type;
   document.getElementById('main-choice').style.display = 'none';
   document.getElementById('water-stage').style.display = 'block';
@@ -106,13 +144,17 @@ function showWater(type) {
     `;
   }
   
-  playWaterSound(type);
+  // 약간 지연 후 물 소리 재생
+  setTimeout(() => {
+    playWaterSound(type);
+  }, 100);
+  
   startSparkles();
   startWaterParticles();
   setupIconPicker();
 }
 
-// 분수 물줄기 생성 (더 많이, 더 화려하게)
+// 분수 물줄기 생성
 function createFountainStreams() {
   let streams = '';
   for (let i = 0; i < 12; i++) {
@@ -128,42 +170,49 @@ function createFountainStreams() {
   return streams;
 }
 
-// 물 소리 재생
+// 물 소리 재생 (개선된 버전)
 function playWaterSound(type) {
+  // 기존 물소리 정지
   if (ambientAudio) {
     ambientAudio.pause();
+    ambientAudio.currentTime = 0;
     ambientAudio = null;
   }
   
-  // 새로운 오디오 객체 생성
-  ambientAudio = new Audio(waterSounds[type]);
-  ambientAudio.loop = true;
-  ambientAudio.volume = 0.3;
-  
-  // 사용자 상호작용 후 재생 시도
-  const playPromise = ambientAudio.play();
-  
-  if (playPromise !== undefined) {
-    playPromise
-      .then(() => {
-        console.log('물 소리 재생 성공!');
-      })
-      .catch(error => {
-        console.log('물 소리 자동 재생 차단됨. 화면을 한번 터치해주세요:', error);
-        // 사용자가 화면을 터치하면 재생
-        document.addEventListener('click', function playOnTouch() {
-          ambientAudio.play()
-            .then(() => {
-              console.log('터치 후 물 소리 재생 성공!');
-              document.removeEventListener('click', playOnTouch);
-            })
-            .catch(e => console.log('재생 실패:', e));
-        }, { once: true });
-      });
+  try {
+    // 새로운 오디오 생성
+    ambientAudio = new Audio();
+    ambientAudio.src = waterSounds[type];
+    ambientAudio.loop = true;
+    ambientAudio.volume = 0.4;
+    
+    // preload 설정
+    ambientAudio.load();
+    
+    // 재생 시도
+    const playPromise = ambientAudio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log('✅ 물 소리 재생 성공!');
+        })
+        .catch(error => {
+          console.log('⚠️ 물 소리 자동재생 차단:', error.message);
+          // 재시도를 위해 대기
+          setTimeout(() => {
+            ambientAudio.play()
+              .then(() => console.log('✅ 재시도 성공!'))
+              .catch(e => console.log('❌ 재시도 실패:', e.message));
+          }, 500);
+        });
+    }
+  } catch (e) {
+    console.log('❌ 물 소리 생성 오류:', e);
   }
 }
 
-// 반짝임 효과 (더 화려하게)
+// 반짝임 효과
 function startSparkles() {
   if (sparkleInterval) clearInterval(sparkleInterval);
   
@@ -174,6 +223,8 @@ function startSparkles() {
 
 function createSparkle() {
   const container = document.getElementById('water-animation');
+  if (!container) return;
+  
   const sparkle = document.createElement('div');
   sparkle.className = 'sparkle';
   
@@ -190,7 +241,7 @@ function createSparkle() {
   setTimeout(() => sparkle.remove(), 1200);
 }
 
-// 물방울 효과 추가
+// 물방울 효과
 function startWaterParticles() {
   if (particleInterval) clearInterval(particleInterval);
   
@@ -201,6 +252,8 @@ function startWaterParticles() {
 
 function createWaterParticle() {
   const container = document.getElementById('water-animation');
+  if (!container) return;
+  
   const particle = document.createElement('div');
   particle.className = 'water-particle';
   
@@ -230,6 +283,9 @@ function setupIconPicker() {
 
 // 동물 생성
 function spawnAnimal(icon) {
+  // 오디오 잠금 해제
+  unlockAudio();
+  
   if (currentAnimal) {
     currentAnimal.remove();
   }
@@ -257,13 +313,28 @@ function spawnAnimal(icon) {
   startWandering(animal, container);
 }
 
-// 동물 소리 재생
+// 동물 소리 재생 (개선된 버전)
 function playAnimalSound(icon) {
-  const audio = new Audio(icon.sound);
-  audio.volume = 0.6;
-  audio.play()
-    .then(() => console.log(`${icon.name} 소리 재생 성공!`))
-    .catch(e => console.log('동물 소리 재생 실패:', e));
+  try {
+    const audio = new Audio();
+    audio.src = icon.sound;
+    audio.volume = 0.7;
+    audio.load();
+    
+    const playPromise = audio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log(`✅ ${icon.name} 소리 재생!`);
+        })
+        .catch(error => {
+          console.log(`⚠️ ${icon.name} 소리 재생 실패:`, error.message);
+        });
+    }
+  } catch (e) {
+    console.log('❌ 동물 소리 생성 오류:', e);
+  }
 }
 
 // 축하 애니메이션
@@ -272,11 +343,10 @@ function celebrateAnimal(animal) {
   setTimeout(() => animal.classList.remove('celebrating'), 800);
 }
 
-// 배회 시작 (움직일 때마다 소리)
+// 배회 시작
 function startWandering(animal, container) {
   wanderInterval = setInterval(() => {
     moveAnimalRandomly(animal, container);
-    // 움직일 때 동물 소리
     if (currentAnimalIcon) {
       playAnimalMoveSound(currentAnimalIcon);
     }
@@ -285,11 +355,18 @@ function startWandering(animal, container) {
 
 // 동물 이동 소리
 function playAnimalMoveSound(icon) {
-  const audio = new Audio(icon.moveSound);
-  audio.volume = 0.4;
-  audio.play()
-    .then(() => console.log(`${icon.name} 이동 소리 재생!`))
-    .catch(e => console.log('이동 소리 재생 실패:', e));
+  try {
+    const audio = new Audio();
+    audio.src = icon.moveSound;
+    audio.volume = 0.5;
+    audio.load();
+    
+    audio.play()
+      .then(() => console.log(`🚶 ${icon.name} 이동 소리!`))
+      .catch(e => console.log(`⚠️ 이동 소리 실패:`, e.message));
+  } catch (e) {
+    console.log('❌ 이동 소리 생성 오류:', e);
+  }
 }
 
 // 랜덤 이동
@@ -301,7 +378,6 @@ function moveAnimalRandomly(animal, container) {
   const newX = Math.random() * maxX;
   const newY = Math.random() * maxY;
   
-  // 부드러운 이동
   animal.style.transition = 'left 2s ease-in-out, top 2s ease-in-out';
   animal.style.left = newX + 'px';
   animal.style.top = newY + 'px';
@@ -328,25 +404,30 @@ function checkIfUnderWater(animal, container) {
   
   if (distance < 120) {
     celebrateAnimal(animal);
-    // 물에 닿았을 때: "이-----~~~~하!!!!" 소리
     playSplashSound();
   }
 }
 
 // 물 닿았을 때 소리
 function playSplashSound() {
-  const audio = new Audio(splashSound);
-  audio.volume = 0.7;
-  audio.play()
-    .then(() => console.log('물 첨벙 소리 재생!'))
-    .catch(e => console.log('물 첨벙 소리 재생 실패:', e));
+  try {
+    const audio = new Audio();
+    audio.src = splashSound;
+    audio.volume = 0.8;
+    audio.load();
+    
+    audio.play()
+      .then(() => console.log('💦 물 첨벙 소리!'))
+      .catch(e => console.log('⚠️ 물 첨벙 소리 실패:', e.message));
+  } catch (e) {
+    console.log('❌ 물 첨벙 소리 생성 오류:', e);
+  }
 }
 
 // 컨테이너 클릭 처리 (순간이동)
 function handleContainerClick(event) {
   if (!currentAnimal) return;
   
-  // 동물을 클릭한 경우가 아니라면
   if (event.target.closest('.animal')) {
     return;
   }
@@ -356,19 +437,16 @@ function handleContainerClick(event) {
   const x = event.clientX - rect.left - 40;
   const y = event.clientY - rect.top - 40;
   
-  // 순간이동 (transition 없음)
   currentAnimal.style.transition = 'none';
   currentAnimal.style.left = Math.max(0, Math.min(x, rect.width - 80)) + 'px';
   currentAnimal.style.top = Math.max(0, Math.min(y, rect.height - 80)) + 'px';
   
-  // 동물 소리 재생
   if (currentAnimalIcon) {
     playAnimalMoveSound(currentAnimalIcon);
   }
   
   checkIfUnderWater(currentAnimal, container);
   
-  // transition 복원
   setTimeout(() => {
     currentAnimal.style.transition = 'left 2s ease-in-out, top 2s ease-in-out';
   }, 50);
@@ -381,6 +459,7 @@ function goBack() {
   
   if (ambientAudio) {
     ambientAudio.pause();
+    ambientAudio.currentTime = 0;
     ambientAudio = null;
   }
   if (wanderInterval) {

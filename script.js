@@ -1,4 +1,4 @@
-// 번역
+// 번역1
 const translations = {
   en: {
     mainTitle: "Choose! Fountain or Cascade",

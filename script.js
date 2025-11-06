@@ -26,42 +26,42 @@ let sparkleInterval = null;
 let particleInterval = null;
 let currentWaterType = null;
 
-// 동물 데이터 (각자 다른 소리)
+// 동물 데이터 - 실제 동물 소리로 수정
 const icons = [
   {
     name: "Lion", 
     emoji: "🦁", 
-    sound: "https://cdn.pixabay.com/audio/2022/07/26/audio_124b0c49e4.mp3",
-    moveSound: "https://cdn.pixabay.com/audio/2022/07/26/audio_124b0c49e4.mp3"
+    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf2bf94.mp3", // 사자 으르렁
+    moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf2bf94.mp3"
   },
   {
     name: "Elephant", 
     emoji: "🐘", 
-    sound: "https://cdn.pixabay.com/audio/2022/10/16/audio_12b7f9f3c6.mp3",
-    moveSound: "https://cdn.pixabay.com/audio/2022/10/16/audio_12b7f9f3c6.mp3"
+    sound: "https://cdn.pixabay.com/audio/2021/08/09/audio_8c36fb677e.mp3", // 코끼리 나팔 소리
+    moveSound: "https://cdn.pixabay.com/audio/2021/08/09/audio_8c36fb677e.mp3"
   },
   {
     name: "Monkey", 
     emoji: "🐵", 
-    sound: "https://cdn.pixabay.com/audio/2023/02/14/audio_12b6395b49.mp3",
-    moveSound: "https://cdn.pixabay.com/audio/2023/02/14/audio_12b6395b49.mp3"
+    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_7cbc0735b3.mp3", // 원숭이 우끼끼
+    moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_7cbc0735b3.mp3"
   },
   {
     name: "Panda", 
     emoji: "🐼", 
-    sound: "https://cdn.pixabay.com/audio/2022/07/26/audio_124b0c49e4.mp3",
-    moveSound: "https://cdn.pixabay.com/audio/2022/07/26/audio_124b0c49e4.mp3"
+    sound: "https://cdn.pixabay.com/audio/2022/03/10/audio_0625c1539c.mp3", // 곰 소리
+    moveSound: "https://cdn.pixabay.com/audio/2022/03/10/audio_0625c1539c.mp3"
   }
 ];
 
-// 물 소리 (분수/폭포)
+// 물 소리 (분수/폭포) - 실제 물 소리로 수정
 const waterSounds = {
-  fountain: "https://cdn.pixabay.com/audio/2021/07/12/audio_8b44096148.mp3",
-  cascade: "https://cdn.pixabay.com/audio/2022/03/10/audio_c2c6d7d61c.mp3"
+  fountain: "https://cdn.pixabay.com/audio/2022/03/24/audio_7c0bb3bcee.mp3", // 분수 소리
+  cascade: "https://cdn.pixabay.com/audio/2022/05/13/audio_03b97c1453.mp3" // 폭포 소리
 };
 
 // 물에 닿았을 때 소리 (이-----~~~~하!!!!)
-const splashSound = "https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3";
+const splashSound = "https://cdn.pixabay.com/audio/2023/07/19/audio_fcbc5e28c5.mp3"; // 물 첨벙 소리
 
 // 텍스트 업데이트
 function updateTexts() {
@@ -132,11 +132,35 @@ function createFountainStreams() {
 function playWaterSound(type) {
   if (ambientAudio) {
     ambientAudio.pause();
+    ambientAudio = null;
   }
+  
+  // 새로운 오디오 객체 생성
   ambientAudio = new Audio(waterSounds[type]);
   ambientAudio.loop = true;
-  ambientAudio.volume = 0.2;
-  ambientAudio.play().catch(e => console.log('물 소리 재생 실패:', e));
+  ambientAudio.volume = 0.3;
+  
+  // 사용자 상호작용 후 재생 시도
+  const playPromise = ambientAudio.play();
+  
+  if (playPromise !== undefined) {
+    playPromise
+      .then(() => {
+        console.log('물 소리 재생 성공!');
+      })
+      .catch(error => {
+        console.log('물 소리 자동 재생 차단됨. 화면을 한번 터치해주세요:', error);
+        // 사용자가 화면을 터치하면 재생
+        document.addEventListener('click', function playOnTouch() {
+          ambientAudio.play()
+            .then(() => {
+              console.log('터치 후 물 소리 재생 성공!');
+              document.removeEventListener('click', playOnTouch);
+            })
+            .catch(e => console.log('재생 실패:', e));
+        }, { once: true });
+      });
+  }
 }
 
 // 반짝임 효과 (더 화려하게)
@@ -236,8 +260,10 @@ function spawnAnimal(icon) {
 // 동물 소리 재생
 function playAnimalSound(icon) {
   const audio = new Audio(icon.sound);
-  audio.volume = 0.5;
-  audio.play().catch(e => console.log('동물 소리 재생 실패:', e));
+  audio.volume = 0.6;
+  audio.play()
+    .then(() => console.log(`${icon.name} 소리 재생 성공!`))
+    .catch(e => console.log('동물 소리 재생 실패:', e));
 }
 
 // 축하 애니메이션
@@ -260,8 +286,10 @@ function startWandering(animal, container) {
 // 동물 이동 소리
 function playAnimalMoveSound(icon) {
   const audio = new Audio(icon.moveSound);
-  audio.volume = 0.3;
-  audio.play().catch(e => console.log('이동 소리 재생 실패:', e));
+  audio.volume = 0.4;
+  audio.play()
+    .then(() => console.log(`${icon.name} 이동 소리 재생!`))
+    .catch(e => console.log('이동 소리 재생 실패:', e));
 }
 
 // 랜덤 이동
@@ -308,13 +336,20 @@ function checkIfUnderWater(animal, container) {
 // 물 닿았을 때 소리
 function playSplashSound() {
   const audio = new Audio(splashSound);
-  audio.volume = 0.5;
-  audio.play().catch(e => console.log('물소리 재생 실패:', e));
+  audio.volume = 0.7;
+  audio.play()
+    .then(() => console.log('물 첨벙 소리 재생!'))
+    .catch(e => console.log('물 첨벙 소리 재생 실패:', e));
 }
 
 // 컨테이너 클릭 처리 (순간이동)
 function handleContainerClick(event) {
   if (!currentAnimal) return;
+  
+  // 동물을 클릭한 경우가 아니라면
+  if (event.target.closest('.animal')) {
+    return;
+  }
   
   const container = document.getElementById('game-container');
   const rect = container.getBoundingClientRect();

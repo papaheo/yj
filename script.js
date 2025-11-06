@@ -53,7 +53,7 @@ function showWater(type) {
   document.getElementById('water-stage').style.display = 'block';
 
   const waterAnim = document.getElementById('water-animation');
-  if (type === 'fountain') {
+  if(type === 'fountain') {
     waterAnim.innerHTML = `
       <div class="fountain-water">
         <div class="fountain-base"></div>
@@ -78,7 +78,7 @@ function showWater(type) {
 
 function createFountainStreams() {
   let streams = '';
-  for (let i=0; i<12; i++) {
+  for(let i=0; i<12; i++) {
     const angle = (i*30) - 180;
     const delay = i*0.1;
     streams += `<div class="fountain-stream" style="
@@ -92,26 +92,24 @@ function createFountainStreams() {
 }
 
 function playWaterSound(type) {
-  if (ambientAudio) {
+  if(ambientAudio) {
     ambientAudio.pause();
     ambientAudio.currentTime = 0;
   }
   ambientAudio = new Audio(waterSounds[type]);
   ambientAudio.loop = true;
   ambientAudio.volume = 0.4;
-  ambientAudio.play().catch(err => {
-    console.log('Water sound play prevented, user interaction required.', err.message);
-  });
+  ambientAudio.play().catch(err => console.log('Water sound play prevented:', err.message));
 }
 
 function startSparkles() {
-  if (sparkleInterval) clearInterval(sparkleInterval);
+  if(sparkleInterval) clearInterval(sparkleInterval);
   sparkleInterval = setInterval(createSparkle, 150);
 }
 
 function createSparkle() {
   const container = document.getElementById('water-animation');
-  if (!container) return;
+  if(!container) return;
 
   const sparkle = document.createElement('div');
   sparkle.className = 'sparkle';
@@ -131,7 +129,7 @@ function createSparkle() {
 
 function startWaterParticles() {
   if(particleInterval) clearInterval(particleInterval);
-  particleInterval = setInterval(createWaterParticle,100);
+  particleInterval = setInterval(createWaterParticle, 100);
 }
 
 function createWaterParticle() {
@@ -147,6 +145,7 @@ function createWaterParticle() {
   particle.style.setProperty('--py', (Math.random()*80-40)+'px');
 
   container.appendChild(particle);
+
   setTimeout(() => particle.remove(), 2000);
 }
 
@@ -194,9 +193,7 @@ function playAnimalSound(icon) {
   }
   animalAudio = new Audio(icon.sound);
   animalAudio.volume = 0.7;
-  animalAudio.play().catch(err => {
-    console.log(`${icon.name} sound play failed:`, err.message);
-  });
+  animalAudio.play().catch(err => console.log(`${icon.name} sound play failed:`, err.message));
 }
 
 function celebrateAnimal(animal) {
@@ -220,9 +217,7 @@ function playAnimalMoveSound(icon) {
   }
   animalAudio = new Audio(icon.moveSound);
   animalAudio.volume = 0.5;
-  animalAudio.play().catch(err => {
-    console.log(`Movement sound play failed:`, err.message);
-  });
+  animalAudio.play().catch(err => console.log(`Movement sound play failed:`, err.message));
 }
 
 function moveAnimalRandomly(animal, container) {
@@ -271,14 +266,11 @@ function playSplashSound() {
   }
   const splashAudio = new Audio(splashSound);
   splashAudio.volume = 0.8;
-  splashAudio.play().catch(err => {
-    console.log('Splash sound play failed:', err.message);
-  });
+  splashAudio.play().catch(err => console.log('Splash sound play failed:', err.message));
 }
 
 function handleContainerClick(event) {
   if(!currentAnimal) return;
-
   if(event.target.closest('.animal')) return;
 
   const container = document.getElementById('game-container');
@@ -329,5 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('fountain-btn').addEventListener('click', () => showWater('fountain'));
   document.getElementById('cascade-btn').addEventListener('click', () => showWater('cascade'));
   document.getElementById('back-btn').addEventListener('click', goBack);
+  document.getElementById('game-container').addEventListener('click', handleContainerClick);
   updateTexts();
 });

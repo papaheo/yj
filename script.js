@@ -38,12 +38,8 @@ const waterSounds = {
   cascade:"https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
 };
 
-// 귀여운 "야호~" 소리들 (여러 옵션)
-const funSplashSounds = [
-  "https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=success-fanfare-trumpets-6185.mp3",
-  "https://cdn.pixabay.com/download/audio/2022/03/24/audio_c2e6d85c6b.mp3?filename=goodresult-82807.mp3",
-  "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b14f2c69.mp3?filename=woo-hoo-sound-effect-4.mp3"
-];
+// 우후~ 환호 소리만
+const wooHooSound = "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b14f2c69.mp3?filename=woo-hoo-sound-effect-4.mp3";
 
 function updateTexts() {
   document.getElementById("title-main").innerText = translations[currentLang].mainTitle;
@@ -98,6 +94,7 @@ function createFountainStreams() {
 }
 
 function playWaterSound(type) {
+  // 물 소리는 항상 배경으로 재생
   if(ambientAudio) {
     ambientAudio.pause();
     ambientAudio.currentTime = 0;
@@ -106,7 +103,7 @@ function playWaterSound(type) {
   ambientAudio.loop = true;
   ambientAudio.volume = 0.3;
   ambientAudio.play().then(() => {
-    console.log('✅ 물 소리 재생 성공!');
+    console.log('✅ 물 소리 배경 재생 중...');
   }).catch(err => {
     console.log('⚠️ 물 소리 차단됨:', err.message);
     console.log('💡 화면을 터치하면 소리가 재생됩니다');
@@ -198,10 +195,12 @@ function spawnAnimal(icon) {
 }
 
 function playAnimalSound(icon) {
+  // 동물 소리는 겹치지 않게 - 이전 소리 중지
   if(animalAudio) {
     animalAudio.pause();
     animalAudio.currentTime = 0;
   }
+  
   animalAudio = new Audio(icon.sound);
   animalAudio.volume = 0.6;
   animalAudio.play().then(() => {
@@ -226,10 +225,15 @@ function startWandering(animal, container) {
 }
 
 function playAnimalMoveSound(icon) {
-  // 이동할 때는 새로운 Audio 객체를 만들어서 겹쳐도 됨
-  const moveAudio = new Audio(icon.moveSound);
-  moveAudio.volume = 0.4;
-  moveAudio.play().then(() => {
+  // 동물 소리는 겹치지 않게 - 이전 소리 중지
+  if(animalAudio) {
+    animalAudio.pause();
+    animalAudio.currentTime = 0;
+  }
+  
+  animalAudio = new Audio(icon.moveSound);
+  animalAudio.volume = 0.4;
+  animalAudio.play().then(() => {
     console.log(`🚶 ${icon.name} 이동!`);
   }).catch(err => {
     console.log(`⚠️ 이동 소리 차단:`, err.message);
@@ -276,21 +280,19 @@ function checkIfUnderWater(animal, container) {
 }
 
 function playSplashSound() {
-  // 이전 첨벙 소리가 재생 중이면 중지
+  // 이전 우후~ 소리가 재생 중이면 중지
   if(splashAudio) {
     splashAudio.pause();
     splashAudio.currentTime = 0;
   }
   
-  // 랜덤으로 귀여운 소리 선택
-  const randomSound = funSplashSounds[Math.floor(Math.random() * funSplashSounds.length)];
-  
-  splashAudio = new Audio(randomSound);
+  // 우후~ 환호 소리만 재생
+  splashAudio = new Audio(wooHooSound);
   splashAudio.volume = 0.8;
   splashAudio.play().then(() => {
-    console.log('🎉 야호~! 물 첨벙 소리 재생!');
+    console.log('🎉 우후~! 물에 닿았어요!');
   }).catch(err => {
-    console.log('⚠️ 물 첨벙 소리 차단:', err.message);
+    console.log('⚠️ 우후 소리 차단:', err.message);
     console.log('💡 화면을 터치해보세요!');
   });
 }

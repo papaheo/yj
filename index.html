@@ -10,7 +10,7 @@
   <div id="language-switch">
     <label for="lang-select">언어 / Language:</label>
     <select id="lang-select">
-      <option value="en">English</option>
+      <option value="en" selected>English</option>
       <option value="ko">한국어</option>
     </select>
   </div>
@@ -18,17 +18,17 @@
   <h1 id="title-main">Choose! Fountain or Cascade</h1>
 
   <div id="main-choice">
-    <button id="fountain-btn" class="btn" onclick="showWater('fountain')">🌊 Fountain</button>
-    <button id="cascade-btn" class="btn" onclick="showWater('cascade')">💦 Cascade</button>
+    <button id="fountain-btn" class="btn">🌊 Fountain</button>
+    <button id="cascade-btn" class="btn">💦 Cascade</button>
   </div>
 
   <div id="water-stage">
-    <div id="game-container" onclick="handleContainerClick(event)">
+    <div id="game-container" tabindex="0">
       <div id="water-animation"></div>
     </div>
     <h2 id="pick-title">Tap an animal to play and watch it wander!</h2>
     <div id="icon-picker"></div>
-    <button id="back-btn" class="btn back-btn" onclick="goBack()">↩ Back</button>
+    <button id="back-btn" class="btn back-btn">↩ Back</button>
   </div>
 
   <script src="script.js"></script>

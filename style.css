@@ -1,4 +1,3 @@
-/* Your modified style.css content exactly as provided by you */
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -31,7 +30,20 @@ select {
   cursor: pointer;
 }
 
-/* ...rest of your CSS as is... */
+h1, h2 {
+  margin: 30px 20px 20px;
+  color: #0077b6;
+  text-shadow: 0 0 15px #48cae4, 0 2px 4px rgba(0,0,0,0.2);
+  user-select: none;
+}
+
+h1 { 
+  font-size: 2.2em; 
+}
+
+h2 { 
+  font-size: 1.8em; 
+}
 
 .btn {
   font-size: 1.8em;
@@ -48,4 +60,71 @@ select {
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* ... continue rest unchanged ... */
+.btn:hover, .btn:active {
+  background: linear-gradient(135deg, #48cae4, #0096c7);
+  box-shadow: 0 12px 30px rgba(72,202,228,0.6), inset 0 -4px 8px #006d91;
+  transform: translateY(-2px);
+}
+
+#main-choice, #water-stage {
+  padding: 20px;
+}
+
+#water-stage {
+  display: none;
+}
+
+#game-container {
+  position: relative;
+  width: 95%;
+  max-width: 600px;
+  height: 70vh;
+  max-height: 500px;
+  margin: 20px auto;
+  border-radius: 25px;
+  background: linear-gradient(to bottom, #e0f7ff 0%, #ade8f4 50%, #90e0ef 100%);
+  box-shadow: 0 0 40px rgba(0,180,216,0.6), inset 0 2px 20px rgba(255,255,255,0.3);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#water-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 화려한 분수 효과 */
+.fountain-water {
+  width: 200px;
+  height: 200px;
+  position: relative;
+}
+
+.fountain-base {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 50px;
+  background: linear-gradient(to bottom, #4db8ff, #2b9fd9);
+  border-radius: 50%;
+  box-shadow: 
+    0 4px 20px rgba(77,184,255,0.8),
+    inset 0 -10px 20px rgba(0,0,0,0.3);
+  animation: poolPulse 2s ease-in-out infinite;
+}
+
+@keyframes poolPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 4px 20px rgba(77,184,255,0.8),
+      inset 0 -10px 20px rgba(0,0,0,0.3);
+  }
+  50% { 
+    box-shadow: 
+      0 8px 40px rgba(77,184,255,1),

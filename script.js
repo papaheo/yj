@@ -224,16 +224,17 @@ function spawnAnimal(icon) {
   startWandering(animal, container);
 }
 
+let animalAudio = null; // Persistent animal sound player
+
 function playAnimalSound(icon) {
   if (animalAudio) {
     animalAudio.pause();
     animalAudio.currentTime = 0;
+    animalAudio = null;
   }
   animalAudio = new Audio(icon.sound);
   animalAudio.volume = 0.7;
-  animalAudio.play().then(() => {
-    console.log(`${icon.name} sound played.`);
-  }).catch(err => {
+  animalAudio.play().catch(err => {
     console.log(`${icon.name} sound play failed:`, err.message);
   });
 }

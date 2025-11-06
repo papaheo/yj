@@ -18,6 +18,7 @@ const translations = {
 let currentLang = "en";
 let ambientAudio = null;
 let animalAudio = null;
+let splashAudio = null;
 let currentAnimal = null;
 let currentAnimalIcon = null;
 let wanderInterval = null;
@@ -37,8 +38,12 @@ const waterSounds = {
   cascade:"https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
 };
 
-// 즐거운 물에 닿았을 때 소리
-const funSplashSound = "https://cdn.pixabay.com/download/audio/2022/03/15/audio_5b05a9c684.mp3?filename=dolphin-whistle-2-109627.mp3";
+// 귀여운 "야호~" 소리들 (여러 옵션)
+const funSplashSounds = [
+  "https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=success-fanfare-trumpets-6185.mp3",
+  "https://cdn.pixabay.com/download/audio/2022/03/24/audio_c2e6d85c6b.mp3?filename=goodresult-82807.mp3",
+  "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b14f2c69.mp3?filename=woo-hoo-sound-effect-4.mp3"
+];
 
 function updateTexts() {
   document.getElementById("title-main").innerText = translations[currentLang].mainTitle;
@@ -99,9 +104,12 @@ function playWaterSound(type) {
   }
   ambientAudio = new Audio(waterSounds[type]);
   ambientAudio.loop = true;
-  ambientAudio.volume = 0.4;
-  ambientAudio.play().catch(err => {
-    console.log('Water sound play prevented:', err.message);
+  ambientAudio.volume = 0.3;
+  ambientAudio.play().then(() => {
+    console.log('✅ 물 소리 재생 성공!');
+  }).catch(err => {
+    console.log('⚠️ 물 소리 차단됨:', err.message);
+    console.log('💡 화면을 터치하면 소리가 재생됩니다');
   });
 }
 
@@ -195,8 +203,12 @@ function playAnimalSound(icon) {
     animalAudio.currentTime = 0;
   }
   animalAudio = new Audio(icon.sound);
-  animalAudio.volume = 0.7;
-  animalAudio.play().catch(err => console.log(`${icon.name} sound play failed:`, err.message));
+  animalAudio.volume = 0.6;
+  animalAudio.play().then(() => {
+    console.log(`✅ ${icon.name} 소리 재생!`);
+  }).catch(err => {
+    console.log(`⚠️ ${icon.name} 소리 차단:`, err.message);
+  });
 }
 
 function celebrateAnimal(animal) {
@@ -214,13 +226,14 @@ function startWandering(animal, container) {
 }
 
 function playAnimalMoveSound(icon) {
-  if(animalAudio) {
-    animalAudio.pause();
-    animalAudio.currentTime = 0;
-  }
-  animalAudio = new Audio(icon.moveSound);
-  animalAudio.volume = 0.5;
-  animalAudio.play().catch(err => console.log(`Movement sound play failed:`, err.message));
+  // 이동할 때는 새로운 Audio 객체를 만들어서 겹쳐도 됨
+  const moveAudio = new Audio(icon.moveSound);
+  moveAudio.volume = 0.4;
+  moveAudio.play().then(() => {
+    console.log(`🚶 ${icon.name} 이동!`);
+  }).catch(err => {
+    console.log(`⚠️ 이동 소리 차단:`, err.message);
+  });
 }
 
 function moveAnimalRandomly(animal, container) {
@@ -255,21 +268,31 @@ function checkIfUnderWater(animal, container) {
     Math.pow(centerY - waterCenterY, 2)
   );
 
-  if(distance < 120) { // 닿았을 때
+  if(distance < 120) {
+    console.log('💦 동물이 물에 닿았어요!');
     celebrateAnimal(animal);
     playSplashSound();
   }
 }
 
 function playSplashSound() {
-  if(animalAudio) {
-    animalAudio.pause();
-    animalAudio.currentTime = 0;
-    animalAudio = null;
+  // 이전 첨벙 소리가 재생 중이면 중지
+  if(splashAudio) {
+    splashAudio.pause();
+    splashAudio.currentTime = 0;
   }
-  const splashAudio = new Audio(funSplashSound); // 새로운 즐거운 소리
+  
+  // 랜덤으로 귀여운 소리 선택
+  const randomSound = funSplashSounds[Math.floor(Math.random() * funSplashSounds.length)];
+  
+  splashAudio = new Audio(randomSound);
   splashAudio.volume = 0.8;
-  splashAudio.play().catch(err => console.log('Splash sound play failed:', err.message));
+  splashAudio.play().then(() => {
+    console.log('🎉 야호~! 물 첨벙 소리 재생!');
+  }).catch(err => {
+    console.log('⚠️ 물 첨벙 소리 차단:', err.message);
+    console.log('💡 화면을 터치해보세요!');
+  });
 }
 
 function handleContainerClick(event) {
@@ -305,6 +328,16 @@ function goBack() {
     ambientAudio.pause();
     ambientAudio.currentTime = 0;
     ambientAudio = null;
+  }
+  if(animalAudio) {
+    animalAudio.pause();
+    animalAudio.currentTime = 0;
+    animalAudio = null;
+  }
+  if(splashAudio) {
+    splashAudio.pause();
+    splashAudio.currentTime = 0;
+    splashAudio = null;
   }
   if(wanderInterval) clearInterval(wanderInterval);
   if(sparkleInterval) clearInterval(sparkleInterval);

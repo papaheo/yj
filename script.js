@@ -1,4 +1,4 @@
-// 번역1
+// 번역
 const translations = {
   en: {
     mainTitle: "Choose! Fountain or Cascade",
@@ -17,7 +17,8 @@ const translations = {
 };
 
 let currentLang = "en";
-let ambientAudio = null;
+let ambientAudio = null;  // persistent fountain/cascade water audio
+let animalAudio = null;   // persistent current animal sound audio
 let currentAnimal = null;
 let currentAnimalIcon = null;
 let wanderInterval = null;
@@ -123,25 +124,16 @@ function createFountainStreams() {
 
 function playWaterSound(type) {
   if (ambientAudio) {
-    try {
-      ambientAudio.pause();
-      ambientAudio.currentTime = 0;
-    } catch(e) {
-      console.log('Error stopping previous sound:', e);
-    }
-    ambientAudio = null;
+    ambientAudio.pause();
+    ambientAudio.currentTime = 0;
   }
 
-  try {
-    ambientAudio = new Audio(waterSounds[type]);
-    ambientAudio.loop = true;
-    ambientAudio.volume = 0.4;
-    ambientAudio.play().catch((err) => {
-      console.log('Sound play prevented, user interaction required:', err.message);
-    });
-  } catch(e) {
-    console.log('Error playing water sound:', e);
-  }
+  ambientAudio = new Audio(waterSounds[type]);
+  ambientAudio.loop = true;
+  ambientAudio.volume = 0.4;
+  ambientAudio.play().catch((err) => {
+    console.log('Water sound play prevented, user interaction required.', err.message);
+  });
 }
 
 function startSparkles() {
@@ -233,18 +225,17 @@ function spawnAnimal(icon) {
 }
 
 function playAnimalSound(icon) {
-  try {
-    const audio = new Audio(icon.sound);
-    audio.volume = 0.7;
-
-    audio.play().then(() => {
-      console.log(`✅ ${icon.name} sound played`);
-    }).catch(err => {
-      console.log(`⚠️ ${icon.name} sound play failed:`, err.message);
-    });
-  } catch (e) {
-    console.log('❌ Animal sound error:', e.message);
+  if (animalAudio) {
+    animalAudio.pause();
+    animalAudio.currentTime = 0;
   }
+  animalAudio = new Audio(icon.sound);
+  animalAudio.volume = 0.7;
+  animalAudio.play().then(() => {
+    console.log(`${icon.name} sound played.`);
+  }).catch(err => {
+    console.log(`${icon.name} sound play failed:`, err.message);
+  });
 }
 
 function celebrateAnimal(animal) {
@@ -262,18 +253,17 @@ function startWandering(animal, container) {
 }
 
 function playAnimalMoveSound(icon) {
-  try {
-    const audio = new Audio(icon.moveSound);
-    audio.volume = 0.5;
-
-    audio.play().then(() => {
-      console.log(`🚶 ${icon.name} moved`);
-    }).catch(err => {
-      console.log(`⚠️ Moving sound play failed:`, err.message);
-    });
-  } catch (e) {
-    console.log('❌ Move sound error:', e.message);
+  if (animalAudio) {
+    animalAudio.pause();
+    animalAudio.currentTime = 0;
   }
+  animalAudio = new Audio(icon.moveSound);
+  animalAudio.volume = 0.5;
+  animalAudio.play().then(() => {
+    console.log(`${icon.name} movement sound played.`);
+  }).catch(err => {
+    console.log(`Movement sound play failed:`, err.message);
+  });
 }
 
 function moveAnimalRandomly(animal, container) {
@@ -314,18 +304,18 @@ function checkIfUnderWater(animal, container) {
 }
 
 function playSplashSound() {
-  try {
-    const audio = new Audio(splashSound);
-    audio.volume = 0.8;
-
-    audio.play().then(() => {
-      console.log('💦 Splash!');
-    }).catch(err => {
-      console.log('⚠️ Splash sound play failed:', err.message);
-    });
-  } catch (e) {
-    console.log('❌ Splash sound error:', e.message);
+  if (animalAudio) {
+    animalAudio.pause();
+    animalAudio.currentTime = 0;
+    animalAudio = null;
   }
+  const splashAudio = new Audio(splashSound);
+  splashAudio.volume = 0.8;
+  splashAudio.play().then(() => {
+    console.log('Splash sound played.');
+  }).catch(err => {
+    console.log('Splash sound play failed:', err.message);
+  });
 }
 
 function handleContainerClick(event) {

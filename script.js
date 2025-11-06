@@ -1,4 +1,3 @@
-// 번역
 const translations = {
   en: {
     mainTitle: "Choose! Fountain or Cascade",
@@ -17,8 +16,8 @@ const translations = {
 };
 
 let currentLang = "en";
-let ambientAudio = null;  // Persistent fountain/cascade sound
-let animalAudio = null;   // Persistent animal sound (including movement)
+let ambientAudio = null;
+let animalAudio = null;
 let currentAnimal = null;
 let currentAnimalIcon = null;
 let wanderInterval = null;
@@ -27,35 +26,15 @@ let particleInterval = null;
 let currentWaterType = null;
 
 const icons = [
-  {
-    name: "Lion", 
-    emoji: "🦁", 
-    sound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Löwe.mp3",
-    moveSound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Löwe.mp3"
-  },
-  {
-    name: "Elephant", 
-    emoji: "🐘", 
-    sound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Elefant.mp3",
-    moveSound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Elefant.mp3"
-  },
-  {
-    name: "Monkey", 
-    emoji: "🐵", 
-    sound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Schimpanse.mp3",
-    moveSound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Schimpanse.mp3"
-  },
-  {
-    name: "Panda", 
-    emoji: "🐼", 
-    sound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Gorilla.mp3",
-    moveSound: "https://freeanimalsounds.org/wp-content/uploads/2017/07/Gorilla.mp3"
-  }
+  {name:"Lion", emoji:"🦁", sound:"https://freeanimalsounds.org/wp-content/uploads/2017/07/Löwe.mp3", moveSound:"https://freeanimalsounds.org/wp-content/uploads/2017/07/Löwe.mp3"},
+  {name:"Elephant", emoji:"🐘", sound:"https://freeanimalsounds.org/wp-content/uploads/2017/07/Elefant.mp3", moveSound:"https://freeanimalsounds.org/wp-content/uploads/2017/07/Elefant.mp3"},
+  {name:"Monkey", emoji:"🐵", sound:"https://freeanimalsounds.org/wp-content/uploads/2017/07/Schimpanse.mp3", moveSound:"https://freeanimalsounds.org/wp-content/uploads/2017/07/Schimpanse.mp3"},
+  {name:"Panda", emoji:"🐼", sound:"https://freeanimalsounds.org/wp-content/uploads/2017/07/Gorilla.mp3", moveSound:"https://freeanimalsounds.org/wp-content/uploads/2017/07/Gorilla.mp3"}
 ];
 
 const waterSounds = {
-  fountain: "https://cdn.freesound.org/previews/171/171756_2437358-lq.mp3",
-  cascade: "https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
+  fountain:"https://cdn.freesound.org/previews/171/171756_2437358-lq.mp3",
+  cascade:"https://cdn.freesound.org/previews/396/396197_5121236-lq.mp3"
 };
 
 const splashSound = "https://cdn.freesound.org/previews/345/345299_5121236-lq.mp3";
@@ -68,21 +47,12 @@ function updateTexts() {
   document.getElementById("back-btn").innerHTML = translations[currentLang].backBtn;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById("lang-select").addEventListener("change", function() {
-    currentLang = this.value;
-    updateTexts();
-  });
-  updateTexts();
-});
-
 function showWater(type) {
   currentWaterType = type;
   document.getElementById('main-choice').style.display = 'none';
   document.getElementById('water-stage').style.display = 'block';
 
   const waterAnim = document.getElementById('water-animation');
-
   if (type === 'fountain') {
     waterAnim.innerHTML = `
       <div class="fountain-water">
@@ -108,9 +78,9 @@ function showWater(type) {
 
 function createFountainStreams() {
   let streams = '';
-  for (let i = 0; i < 12; i++) {
-    const angle = (i * 30) - 180;
-    const delay = i * 0.1;
+  for (let i=0; i<12; i++) {
+    const angle = (i*30) - 180;
+    const delay = i*0.1;
     streams += `<div class="fountain-stream" style="
       left: 50%;
       transform: translateX(-50%) rotate(${angle}deg);
@@ -126,7 +96,6 @@ function playWaterSound(type) {
     ambientAudio.pause();
     ambientAudio.currentTime = 0;
   }
-
   ambientAudio = new Audio(waterSounds[type]);
   ambientAudio.loop = true;
   ambientAudio.volume = 0.4;
@@ -147,13 +116,13 @@ function createSparkle() {
   const sparkle = document.createElement('div');
   sparkle.className = 'sparkle';
 
-  const size = Math.random() * 12 + 6;
-  sparkle.style.width = size + 'px';
-  sparkle.style.height = size + 'px';
-  sparkle.style.left = (Math.random() * 80 + 10) + '%';
-  sparkle.style.top = (Math.random() * 70 + 15) + '%';
-  sparkle.style.setProperty('--x', (Math.random() * 120 - 60) + 'px');
-  sparkle.style.setProperty('--y', -(Math.random() * 100 + 50) + 'px');
+  const size = Math.random()*12+6;
+  sparkle.style.width = size+'px';
+  sparkle.style.height = size+'px';
+  sparkle.style.left = (Math.random()*80+10)+'%';
+  sparkle.style.top = (Math.random()*70+15)+'%';
+  sparkle.style.setProperty('--x', (Math.random()*120-60)+'px');
+  sparkle.style.setProperty('--y', -(Math.random()*100+50)+'px');
 
   container.appendChild(sparkle);
 
@@ -161,24 +130,23 @@ function createSparkle() {
 }
 
 function startWaterParticles() {
-  if (particleInterval) clearInterval(particleInterval);
-  particleInterval = setInterval(createWaterParticle, 100);
+  if(particleInterval) clearInterval(particleInterval);
+  particleInterval = setInterval(createWaterParticle,100);
 }
 
 function createWaterParticle() {
   const container = document.getElementById('water-animation');
-  if (!container) return;
+  if(!container) return;
 
   const particle = document.createElement('div');
   particle.className = 'water-particle';
 
-  particle.style.left = (Math.random() * 80 + 10) + '%';
-  particle.style.top = (Math.random() * 60 + 20) + '%';
-  particle.style.setProperty('--px', (Math.random() * 80 - 40) + 'px');
-  particle.style.setProperty('--py', (Math.random() * 80 - 40) + 'px');
+  particle.style.left = (Math.random()*80+10)+'%';
+  particle.style.top = (Math.random()*60+20)+'%';
+  particle.style.setProperty('--px', (Math.random()*80-40)+'px');
+  particle.style.setProperty('--py', (Math.random()*80-40)+'px');
 
   container.appendChild(particle);
-
   setTimeout(() => particle.remove(), 2000);
 }
 
@@ -190,18 +158,14 @@ function setupIconPicker() {
     const btn = document.createElement('button');
     btn.className = 'icon-btn';
     btn.innerHTML = `<img src="data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>${icon.emoji}</text></svg>`)}" alt="${icon.name}">`;
-    btn.onclick = () => spawnAnimal(icon);
+    btn.addEventListener('click', () => spawnAnimal(icon));
     picker.appendChild(btn);
   });
 }
 
 function spawnAnimal(icon) {
-  if (currentAnimal) {
-    currentAnimal.remove();
-  }
-  if (wanderInterval) {
-    clearInterval(wanderInterval);
-  }
+  if(currentAnimal) currentAnimal.remove();
+  if(wanderInterval) clearInterval(wanderInterval);
 
   currentAnimalIcon = icon;
 
@@ -211,8 +175,8 @@ function spawnAnimal(icon) {
   animal.innerHTML = `<img src="data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>${icon.emoji}</text></svg>`)}" alt="${icon.name}">`;
 
   const rect = container.getBoundingClientRect();
-  animal.style.left = (rect.width / 2 - 40) + 'px';
-  animal.style.top = (rect.height / 2 - 40) + 'px';
+  animal.style.left = (rect.width/2 - 40) + 'px';
+  animal.style.top = (rect.height/2 - 40) + 'px';
 
   container.appendChild(animal);
   currentAnimal = animal;
@@ -224,7 +188,7 @@ function spawnAnimal(icon) {
 }
 
 function playAnimalSound(icon) {
-  if (animalAudio) {
+  if(animalAudio) {
     animalAudio.pause();
     animalAudio.currentTime = 0;
   }
@@ -243,14 +207,14 @@ function celebrateAnimal(animal) {
 function startWandering(animal, container) {
   wanderInterval = setInterval(() => {
     moveAnimalRandomly(animal, container);
-    if (currentAnimalIcon) {
+    if(currentAnimalIcon) {
       playAnimalMoveSound(currentAnimalIcon);
     }
   }, 3000);
 }
 
 function playAnimalMoveSound(icon) {
-  if (animalAudio) {
+  if(animalAudio) {
     animalAudio.pause();
     animalAudio.currentTime = 0;
   }
@@ -266,8 +230,8 @@ function moveAnimalRandomly(animal, container) {
   const maxX = rect.width - 80;
   const maxY = rect.height - 80;
 
-  const newX = Math.random() * maxX;
-  const newY = Math.random() * maxY;
+  const newX = Math.random()*maxX;
+  const newY = Math.random()*maxY;
 
   animal.style.transition = 'left 2s ease-in-out, top 2s ease-in-out';
   animal.style.left = newX + 'px';
@@ -281,25 +245,26 @@ function moveAnimalRandomly(animal, container) {
 function checkIfUnderWater(animal, container) {
   const rect = container.getBoundingClientRect();
   const animalRect = animal.getBoundingClientRect();
-  const centerX = animalRect.left + animalRect.width / 2 - rect.left;
-  const centerY = animalRect.top + animalRect.height / 2 - rect.top;
 
-  const waterCenterX = rect.width / 2;
-  const waterCenterY = rect.height / 2;
+  const centerX = animalRect.left + animalRect.width/2 - rect.left;
+  const centerY = animalRect.top + animalRect.height/2 - rect.top;
+
+  const waterCenterX = rect.width/2;
+  const waterCenterY = rect.height/2;
 
   const distance = Math.sqrt(
-    Math.pow(centerX - waterCenterX, 2) + 
+    Math.pow(centerX - waterCenterX, 2) +
     Math.pow(centerY - waterCenterY, 2)
   );
 
-  if (distance < 120) {
+  if(distance < 120) {
     celebrateAnimal(animal);
     playSplashSound();
   }
 }
 
 function playSplashSound() {
-  if (animalAudio) {
+  if(animalAudio) {
     animalAudio.pause();
     animalAudio.currentTime = 0;
     animalAudio = null;
@@ -312,22 +277,21 @@ function playSplashSound() {
 }
 
 function handleContainerClick(event) {
-  if (!currentAnimal) return;
+  if(!currentAnimal) return;
 
-  if (event.target.closest('.animal')) {
-    return;
-  }
+  if(event.target.closest('.animal')) return;
 
   const container = document.getElementById('game-container');
   const rect = container.getBoundingClientRect();
+
   const x = event.clientX - rect.left - 40;
   const y = event.clientY - rect.top - 40;
 
   currentAnimal.style.transition = 'none';
-  currentAnimal.style.left = Math.max(0, Math.min(x, rect.width - 80)) + 'px';
-  currentAnimal.style.top = Math.max(0, Math.min(y, rect.height - 80)) + 'px';
+  currentAnimal.style.left = Math.min(Math.max(0, x), rect.width - 80) + 'px';
+  currentAnimal.style.top = Math.min(Math.max(0, y), rect.height - 80) + 'px';
 
-  if (currentAnimalIcon) {
+  if(currentAnimalIcon) {
     playAnimalMoveSound(currentAnimalIcon);
   }
 
@@ -342,23 +306,28 @@ function goBack() {
   document.getElementById('main-choice').style.display = 'block';
   document.getElementById('water-stage').style.display = 'none';
 
-  if (ambientAudio) {
+  if(ambientAudio) {
     ambientAudio.pause();
     ambientAudio.currentTime = 0;
     ambientAudio = null;
   }
-  if (wanderInterval) {
-    clearInterval(wanderInterval);
-  }
-  if (sparkleInterval) {
-    clearInterval(sparkleInterval);
-  }
-  if (particleInterval) {
-    clearInterval(particleInterval);
-  }
-  if (currentAnimal) {
+  if(wanderInterval) clearInterval(wanderInterval);
+  if(sparkleInterval) clearInterval(sparkleInterval);
+  if(particleInterval) clearInterval(particleInterval);
+  if(currentAnimal) {
     currentAnimal.remove();
     currentAnimal = null;
   }
   currentAnimalIcon = null;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById("lang-select").addEventListener('change', function() {
+    currentLang = this.value;
+    updateTexts();
+  });
+  document.getElementById('fountain-btn').addEventListener('click', () => showWater('fountain'));
+  document.getElementById('cascade-btn').addEventListener('click', () => showWater('cascade'));
+  document.getElementById('back-btn').addEventListener('click', goBack);
+  updateTexts();
+});
